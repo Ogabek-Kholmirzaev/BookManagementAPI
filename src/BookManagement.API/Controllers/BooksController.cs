@@ -25,4 +25,16 @@ public class BooksController(IBookService service) : ControllerBase
         var id = await service.AddAsync(dto);
         return CreatedAtAction(nameof(GetById), new { id }, null);
     }
+
+    [HttpPost("bulk")]
+    public async Task<IActionResult> AddBulk([FromBody] IEnumerable<CreateBookDto> dtos)
+    {
+        if (!ModelState.IsValid)
+        {
+            return BadRequest(ModelState);
+        }
+
+        await service.AddRangeAsync(dtos);
+        return Ok();
+    }
 }
