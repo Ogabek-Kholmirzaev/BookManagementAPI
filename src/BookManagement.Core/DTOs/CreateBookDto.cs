@@ -14,13 +14,13 @@ public class CreateBookDto
     [Required]
     public string AuthorName { get; set; } = string.Empty;
 
-    public Book ToEntity()
+    public static Book ToEntity(CreateBookDto dto)
     {
         return new Book
         {
-            Title = Title,
-            PublicationYear = PublicationYear,
-            AuthorName = AuthorName
+            Title = dto.Title,
+            PublicationYear = dto.PublicationYear,
+            AuthorName = dto.AuthorName
         };
     }
 }
