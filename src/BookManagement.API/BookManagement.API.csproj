@@ -14,4 +14,9 @@
     <Folder Include="Controllers\" />
   </ItemGroup>
 
+  <ItemGroup>
+    <ProjectReference Include="..\BookManagement.Core\BookManagement.Core.csproj" />
+    <ProjectReference Include="..\BookManagement.Data\BookManagement.Data.csproj" />
+  </ItemGroup>
+
 </Project>
