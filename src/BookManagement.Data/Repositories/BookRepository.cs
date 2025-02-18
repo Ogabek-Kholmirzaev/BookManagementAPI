@@ -8,7 +8,7 @@ public class BookRepository(AppDbContext context) : IBookRepository
 {
     public IQueryable<Book> GetAll()
     {
-        throw new NotImplementedException();
+        return context.Books;
     }
 
     public async Task<Book?> GetByIdAsync(int id)
@@ -25,6 +25,7 @@ public class BookRepository(AppDbContext context) : IBookRepository
 
     public async Task UpdateAsync(Book book)
     {
+        book.UpdatedAt = DateTime.UtcNow;
         context.Books.Update(book);
         await context.SaveChangesAsync();
     }
@@ -32,6 +33,7 @@ public class BookRepository(AppDbContext context) : IBookRepository
     public async Task DeleteAsync(Book book)
     {
         book.IsDeleted = true;
+        book.UpdatedAt = DateTime.UtcNow;
         await context.SaveChangesAsync();
     }
 
@@ -39,7 +41,6 @@ public class BookRepository(AppDbContext context) : IBookRepository
     {
         return context.Books.AnyAsync(predicate);
     }
-
 
     public async Task AddRangeAsync(IEnumerable<Book> books)
     {
@@ -49,7 +50,12 @@ public class BookRepository(AppDbContext context) : IBookRepository
 
     public async Task DeleteRangeAsync(List<Book> books)
     {
-        books.ForEach(book => book.IsDeleted = true);
+        books.ForEach(book =>
+        {
+            book.IsDeleted = true;
+            book.UpdatedAt = DateTime.UtcNow;
+        });
+
         await context.SaveChangesAsync();
     }
 }
