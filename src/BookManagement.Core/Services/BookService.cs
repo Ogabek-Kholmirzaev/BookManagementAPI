@@ -62,4 +62,26 @@ public class BookService(IBookRepository repository) : IBookService
 
         await repository.UpdateAsync(book);
     }
+
+    public async Task DeleteAsync(int id)
+    {
+        var book = await repository.GetByIdAsync(id) ?? throw new BookNotFoundException(id);
+        await repository.DeleteAsync(book);
+    }
+
+    public async Task<(bool, IEnumerable<int>)> DeleteRangeAsync(HashSet<int> ids)
+    {
+        var books = await repository.GetAll()
+            .Where(book => !book.IsDeleted && ids.Contains(book.Id))
+            .ToListAsync();
+
+        if (books.Count == ids.Count)
+        {
+            await repository.DeleteRangeAsync(books);
+            return (true, []);
+        }
+
+        IEnumerable<int> notFoundIds = ids.Except(books.Select(book => book.Id));
+        return (false, notFoundIds);
+    }
 }

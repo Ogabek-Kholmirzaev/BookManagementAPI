@@ -49,4 +49,18 @@ public class BooksController(IBookService service) : ControllerBase
         await service.UpdateAsync(id, dto);
         return NoContent();
     }
+
+    [HttpDelete("{id:int}")]
+    public async Task<IActionResult> Delete(int id)
+    {
+        await service.DeleteAsync(id);
+        return NoContent();
+    }
+
+    [HttpDelete("bulk")]
+    public async Task<IActionResult> DeleteBulk([FromBody] HashSet<int> ids)
+    {
+        var (isSuccess, notFoundIds) = await service.DeleteRangeAsync(ids);
+        return isSuccess ? NoContent() : NotFound(notFoundIds);
+    }
 }
