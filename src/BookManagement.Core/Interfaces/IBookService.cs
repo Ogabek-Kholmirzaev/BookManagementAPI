@@ -4,6 +4,7 @@ namespace BookManagement.Core.Interfaces;
 
 public interface IBookService
 {
+    Task<BookDto> GetByIdAsync(int id);
     Task<int> AddAsync(CreateBookDto dto);
     Task AddRangeAsync(IEnumerable<CreateBookDto> dtos);
     Task UpdateAsync(int id, UpdateBookDto dto);

@@ -8,6 +8,16 @@ namespace BookManagement.Core.Services;
 
 public class BookService(IBookRepository repository) : IBookService
 {
+    public async Task<BookDto> GetByIdAsync(int id)
+    {
+        var book = await repository.GetByIdAsync(id) ?? throw new BookNotFoundException(id);
+
+        book.ViewsCount++;
+        await repository.UpdateAsync(book);
+
+        return BookDto.FromEntity(book);
+    }
+
     public async Task<int> AddAsync(CreateBookDto dto)
     {
         if (await repository.AnyAsync(book => !book.IsDeleted && book.Title == dto.Title))

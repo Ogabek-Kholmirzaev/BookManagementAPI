@@ -11,7 +11,8 @@ public class BooksController(IBookService service) : ControllerBase
     [HttpGet("{id:int}")]
     public async Task<IActionResult> GetById(int id)
     {
-        throw new NotImplementedException();
+        var bookDto = await service.GetByIdAsync(id);
+        return Ok(bookDto);
     }
 
     [HttpPost]
