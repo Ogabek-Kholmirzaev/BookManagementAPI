@@ -17,11 +17,6 @@ public class BooksController(IBookService service) : ControllerBase
     [HttpPost]
     public async Task<IActionResult> Add([FromBody] CreateBookDto dto)
     {
-        if (!ModelState.IsValid)
-        {
-            return BadRequest(ModelState);
-        }
-
         var id = await service.AddAsync(dto);
         return CreatedAtAction(nameof(GetById), new { id }, null);
     }
@@ -29,11 +24,6 @@ public class BooksController(IBookService service) : ControllerBase
     [HttpPost("bulk")]
     public async Task<IActionResult> AddBulk([FromBody] IEnumerable<CreateBookDto> dtos)
     {
-        if (!ModelState.IsValid)
-        {
-            return BadRequest(ModelState);
-        }
-
         await service.AddRangeAsync(dtos);
         return Ok();
     }
@@ -41,11 +31,6 @@ public class BooksController(IBookService service) : ControllerBase
     [HttpPut]
     public async Task<IActionResult> Update(int id, [FromBody] UpdateBookDto dto)
     {
-        if (!ModelState.IsValid)
-        {
-            return BadRequest(ModelState);
-        }
-
         await service.UpdateAsync(id, dto);
         return NoContent();
     }
