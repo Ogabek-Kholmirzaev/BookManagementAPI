@@ -10,6 +10,7 @@ namespace BookManagement.API.Controllers;
 public class BooksController(IBookService service) : ControllerBase
 {
     [HttpGet]
+    [ProducesResponseType(typeof(PagedResult<BookListDto>), 200)]
     public async Task<IActionResult> GetAll([FromQuery] PaginationParams @params)
     {
         var pagedBooks = await service.GetAllAsync(@params);
@@ -17,6 +18,8 @@ public class BooksController(IBookService service) : ControllerBase
     }
 
     [HttpGet("{id:int}")]
+    [ProducesResponseType(typeof(BookDto), StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
     public async Task<IActionResult> GetById(int id)
     {
         var bookDto = await service.GetByIdAsync(id);
@@ -24,13 +27,18 @@ public class BooksController(IBookService service) : ControllerBase
     }
 
     [HttpPost]
+    [ProducesResponseType(StatusCodes.Status201Created)]
+    [ProducesResponseType(typeof(string), StatusCodes.Status400BadRequest)]
     public async Task<IActionResult> Add([FromBody] CreateBookDto dto)
     {
         var id = await service.AddAsync(dto);
-        return CreatedAtAction(nameof(GetById), new { id }, null);
+        return CreatedAtAction(nameof(GetById), new { id });
     }
 
     [HttpPost("bulk")]
+    [ProducesResponseType(StatusCodes.Status200OK)]
+    [ProducesResponseType(typeof(string), StatusCodes.Status400BadRequest)]
+
     public async Task<IActionResult> AddBulk([FromBody] IEnumerable<CreateBookDto> dtos)
     {
         await service.AddRangeAsync(dtos);
@@ -38,6 +46,9 @@ public class BooksController(IBookService service) : ControllerBase
     }
 
     [HttpPut]
+    [ProducesResponseType(StatusCodes.Status204NoContent)]
+    [ProducesResponseType(typeof(string), StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
     public async Task<IActionResult> Update(int id, [FromBody] UpdateBookDto dto)
     {
         await service.UpdateAsync(id, dto);
@@ -45,6 +56,8 @@ public class BooksController(IBookService service) : ControllerBase
     }
 
     [HttpDelete("{id:int}")]
+    [ProducesResponseType(StatusCodes.Status204NoContent)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
     public async Task<IActionResult> Delete(int id)
     {
         await service.DeleteAsync(id);
@@ -52,6 +65,8 @@ public class BooksController(IBookService service) : ControllerBase
     }
 
     [HttpDelete("bulk")]
+    [ProducesResponseType(StatusCodes.Status204NoContent)]
+    [ProducesResponseType(typeof(IEnumerable<int>), StatusCodes.Status404NotFound)]
     public async Task<IActionResult> DeleteBulk([FromBody] HashSet<int> ids)
     {
         var (isSuccess, notFoundIds) = await service.DeleteRangeAsync(ids);
