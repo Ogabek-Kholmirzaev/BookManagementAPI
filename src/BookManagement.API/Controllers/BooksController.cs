@@ -36,13 +36,13 @@ public class BooksController(IBookService service) : ControllerBase
     }
 
     [HttpPost("bulk")]
-    [ProducesResponseType(StatusCodes.Status200OK)]
+    [ProducesResponseType(typeof(IEnumerable<BookDto>), StatusCodes.Status201Created)]
     [ProducesResponseType(typeof(string), StatusCodes.Status400BadRequest)]
 
     public async Task<IActionResult> AddBulk([FromBody] IEnumerable<CreateBookDto> dtos)
     {
-        var ids = await service.AddRangeAsync(dtos);
-        return Ok(ids);
+        var bookDtos = await service.AddRangeAsync(dtos);
+        return CreatedAtAction(nameof(GetAll), bookDtos);
     }
 
     [HttpPut("{id:int}")]

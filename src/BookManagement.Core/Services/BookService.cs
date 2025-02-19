@@ -48,7 +48,7 @@ public class BookService(IBookRepository repository) : IBookService
         return BookDto.FromEntity(book);
     }
 
-    public async Task<IEnumerable<int>> AddRangeAsync(IEnumerable<CreateBookDto> dtos)
+    public async Task<IEnumerable<BookDto>> AddRangeAsync(IEnumerable<CreateBookDto> dtos)
     {
         var titles = await repository.GetAll()
             .Where(book => !book.IsDeleted)
@@ -72,7 +72,7 @@ public class BookService(IBookRepository repository) : IBookService
 
         var books = dtos.Select(CreateBookDto.ToEntity);
         await repository.AddRangeAsync(books);
-        return books.Select(book => book.Id);
+        return books.Select(book => BookDto.FromEntity(book));
     }
 
     public async Task UpdateAsync(int id, UpdateBookDto dto)
