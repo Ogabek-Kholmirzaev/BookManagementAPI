@@ -17,8 +17,6 @@ public class BookDto
 
     public static BookDto FromEntity(Book book)
     {
-        var bookAge = DateTime.UtcNow.Year - book.PublicationYear;
-
         return new BookDto
         {
             Id = book.Id,
@@ -26,8 +24,8 @@ public class BookDto
             PublicationYear = book.PublicationYear,
             AuthorName = book.AuthorName,
             ViewsCount = book.ViewsCount,
-            YearsSincePublished = bookAge,
-            PopularityScore = book.ViewsCount * 0.5m + bookAge * 2,
+            YearsSincePublished = Book.GetAge(book.PublicationYear),
+            PopularityScore = Book.GetPopularityScore(book.ViewsCount, book.PublicationYear),
             IsDeleted = book.IsDeleted,
             CreatedAt = book.CreatedAt,
             UpdatedAt = book.UpdatedAt
