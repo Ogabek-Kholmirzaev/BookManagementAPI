@@ -1,7 +1,7 @@
 ﻿namespace BookManagement.Core.DTOs;
 
-public class BookListDto
+public class BookListDto(int Id, string Title)
 {
-    public int Id { get; set; }
-    public required string Title { get; set; }
+    public int Id { get; } = Id;
+    public string Title { get; } = Title;
 }

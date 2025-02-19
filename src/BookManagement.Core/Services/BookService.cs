@@ -1,6 +1,8 @@
 ﻿using BookManagement.Core.DTOs;
 using BookManagement.Core.Exceptions;
 using BookManagement.Core.Interfaces;
+using BookManagement.Core.Pagination;
+using BookManagement.Data.Entities;
 using BookManagement.Data.Repositories;
 using Microsoft.EntityFrameworkCore;
 
@@ -8,6 +10,22 @@ namespace BookManagement.Core.Services;
 
 public class BookService(IBookRepository repository) : IBookService
 {
+    public async Task<PagedResult<BookListDto>> GetAllAsync(PaginationParams @params)
+    {
+        var query = repository.GetAll().Where(book => !book.IsDeleted);
+        var totalCount = await query.CountAsync();
+
+        var bookListDtos = await query
+            .OrderByDescending(book =>
+                book.ViewsCount * 0.5m + (DateTime.UtcNow.Year - book.PublicationYear) * 2) // order by desc according to popularity score
+            .Select(book => new BookListDto(book.Id, book.Title))
+            .Skip(@params.PageSize * (@params.PageIndex - 1))
+            .Take(@params.PageSize)
+            .ToListAsync();
+
+        return new PagedResult<BookListDto>(bookListDtos, totalCount, @params.PageIndex, @params.PageSize);
+    }
+
     public async Task<BookDto> GetByIdAsync(int id)
     {
         var book = await repository.GetByIdAsync(id) ?? throw new BookNotFoundException(id);

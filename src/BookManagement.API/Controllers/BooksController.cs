@@ -1,5 +1,6 @@
 ﻿using BookManagement.Core.DTOs;
 using BookManagement.Core.Interfaces;
+using BookManagement.Core.Pagination;
 using Microsoft.AspNetCore.Mvc;
 
 namespace BookManagement.API.Controllers;
@@ -8,6 +9,13 @@ namespace BookManagement.API.Controllers;
 [ApiController]
 public class BooksController(IBookService service) : ControllerBase
 {
+    [HttpGet]
+    public async Task<IActionResult> GetAll([FromQuery] PaginationParams @params)
+    {
+        var pagedBooks = await service.GetAllAsync(@params);
+        return Ok(pagedBooks);
+    }
+
     [HttpGet("{id:int}")]
     public async Task<IActionResult> GetById(int id)
     {

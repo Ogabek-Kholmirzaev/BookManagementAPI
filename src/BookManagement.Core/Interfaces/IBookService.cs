@@ -1,9 +1,11 @@
 ﻿using BookManagement.Core.DTOs;
+using BookManagement.Core.Pagination;
 
 namespace BookManagement.Core.Interfaces;
 
 public interface IBookService
 {
+    Task<PagedResult<BookListDto>> GetAllAsync(PaginationParams @params);
     Task<BookDto> GetByIdAsync(int id);
     Task<int> AddAsync(CreateBookDto dto);
     Task AddRangeAsync(IEnumerable<CreateBookDto> dtos);
