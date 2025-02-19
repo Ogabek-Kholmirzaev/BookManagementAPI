@@ -1,3 +1,4 @@
+using BookManagement.API.Middlewares;
 using BookManagement.Core.Interfaces;
 using BookManagement.Core.Services;
 using BookManagement.Data;
@@ -26,6 +27,8 @@ if (app.Environment.IsDevelopment())
 }
 
 app.UseHttpsRedirection();
+
+app.UseErrorHandlingMiddleware();
 
 app.UseAuthorization();
 
