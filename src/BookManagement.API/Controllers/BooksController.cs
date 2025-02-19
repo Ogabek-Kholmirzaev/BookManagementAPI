@@ -37,4 +37,16 @@ public class BooksController(IBookService service) : ControllerBase
         await service.AddRangeAsync(dtos);
         return Ok();
     }
+
+    [HttpPut]
+    public async Task<IActionResult> Update(int id, [FromBody] UpdateBookDto dto)
+    {
+        if (!ModelState.IsValid)
+        {
+            return BadRequest(ModelState);
+        }
+
+        await service.UpdateAsync(id, dto);
+        return NoContent();
+    }
 }

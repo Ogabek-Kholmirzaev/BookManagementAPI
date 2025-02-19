@@ -46,4 +46,20 @@ public class BookService(IBookRepository repository) : IBookService
         var books = dtos.Select(CreateBookDto.ToEntity);
         await repository.AddRangeAsync(books);
     }
+
+    public async Task UpdateAsync(int id, UpdateBookDto dto)
+    {
+        var book = await repository.GetByIdAsync(id) ?? throw new BookNotFoundException(id);
+
+        if (await repository.AnyAsync(book => !book.IsDeleted && book.Title == dto.Title))
+        {
+            throw new TitleAlreadyExistsException(dto.Title);
+        }
+
+        book.Title = dto.Title;
+        book.PublicationYear = dto.PublicationYear;
+        book.AuthorName = dto.AuthorName;
+
+        await repository.UpdateAsync(book);
+    }
 }
