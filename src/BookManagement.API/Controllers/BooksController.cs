@@ -27,12 +27,12 @@ public class BooksController(IBookService service) : ControllerBase
     }
 
     [HttpPost]
-    [ProducesResponseType(StatusCodes.Status201Created)]
+    [ProducesResponseType(typeof(BookDto), StatusCodes.Status201Created)]
     [ProducesResponseType(typeof(string), StatusCodes.Status400BadRequest)]
     public async Task<IActionResult> Add([FromBody] CreateBookDto dto)
     {
-        var id = await service.AddAsync(dto);
-        return CreatedAtAction(nameof(GetById), new { id });
+        var bookDto = await service.AddAsync(dto);
+        return CreatedAtAction(nameof(GetById), new { bookDto.Id }, bookDto);
     }
 
     [HttpPost("bulk")]
@@ -41,11 +41,11 @@ public class BooksController(IBookService service) : ControllerBase
 
     public async Task<IActionResult> AddBulk([FromBody] IEnumerable<CreateBookDto> dtos)
     {
-        await service.AddRangeAsync(dtos);
-        return Ok();
+        var ids = await service.AddRangeAsync(dtos);
+        return Ok(ids);
     }
 
-    [HttpPut]
+    [HttpPut("{id:int}")]
     [ProducesResponseType(StatusCodes.Status204NoContent)]
     [ProducesResponseType(typeof(string), StatusCodes.Status400BadRequest)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]

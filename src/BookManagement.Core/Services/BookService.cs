@@ -36,7 +36,7 @@ public class BookService(IBookRepository repository) : IBookService
         return BookDto.FromEntity(book);
     }
 
-    public async Task<int> AddAsync(CreateBookDto dto)
+    public async Task<BookDto> AddAsync(CreateBookDto dto)
     {
         if (await repository.AnyAsync(book => !book.IsDeleted && book.Title == dto.Title))
         {
@@ -45,10 +45,10 @@ public class BookService(IBookRepository repository) : IBookService
 
         var book = CreateBookDto.ToEntity(dto);
         await repository.AddAsync(book);
-        return book.Id;
+        return BookDto.FromEntity(book);
     }
 
-    public async Task AddRangeAsync(IEnumerable<CreateBookDto> dtos)
+    public async Task<IEnumerable<int>> AddRangeAsync(IEnumerable<CreateBookDto> dtos)
     {
         var titles = await repository.GetAll()
             .Where(book => !book.IsDeleted)
@@ -72,6 +72,7 @@ public class BookService(IBookRepository repository) : IBookService
 
         var books = dtos.Select(CreateBookDto.ToEntity);
         await repository.AddRangeAsync(books);
+        return books.Select(book => book.Id);
     }
 
     public async Task UpdateAsync(int id, UpdateBookDto dto)
