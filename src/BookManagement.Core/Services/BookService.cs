@@ -38,7 +38,7 @@ public class BookService(IBookRepository repository) : IBookService
 
     public async Task<BookDto> AddAsync(CreateBookDto dto)
     {
-        if (await repository.AnyAsync(book => !book.IsDeleted && book.Title == dto.Title))
+        if (await repository.AnyAsync(book => !book.IsDeleted && book.Title.ToLower() == dto.Title.ToLower()))
         {
             throw new TitleAlreadyExistsException(dto.Title);
         }
@@ -52,14 +52,14 @@ public class BookService(IBookRepository repository) : IBookService
     {
         var titles = await repository.GetAll()
             .Where(book => !book.IsDeleted)
-            .Select(book => book.Title)
+            .Select(book => book.Title.ToLower())
             .ToListAsync();
 
         var exsistingTitles = new HashSet<string>();
 
         foreach (var dto in dtos)
         {
-            if (titles.Contains(dto.Title))
+            if (titles.Contains(dto.Title.ToLower()))
             {
                 exsistingTitles.Add(dto.Title);
             }
@@ -79,7 +79,7 @@ public class BookService(IBookRepository repository) : IBookService
     {
         var book = await repository.GetByIdAsync(id) ?? throw new BookNotFoundException(id);
 
-        if (await repository.AnyAsync(book => !book.IsDeleted && book.Title == dto.Title))
+        if (await repository.AnyAsync(book => !book.IsDeleted && book.Title.ToLower() == dto.Title.ToLower()))
         {
             throw new TitleAlreadyExistsException(dto.Title);
         }
